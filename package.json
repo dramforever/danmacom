@@ -1,0 +1,95 @@
+{
+	"name": "danmacom",
+	"publisher": "dramforever",
+	"displayName": "Danmacom",
+	"description": "Turn danmaku into comments",
+	"version": "0.0.1",
+	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/dramforever/danmacom.git"
+	},
+	"engines": {
+		"vscode": "^1.34.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:danmacom.start"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "Danmacom configuration",
+			"properties": {
+				"danmacom.program": {
+					"type": "string",
+					"default": "",
+					"scope": "application",
+					"markdownDescription": "Command for program to use as backend"
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "danmacom.start",
+				"category": "Danmacom",
+				"title": "Start"
+			},
+			{
+				"command": "danmacom.stop",
+				"category": "Danmacom",
+				"title": "Stop"
+			},
+			{
+				"command": "danmacom.deleteComment",
+				"category": "Danmacom",
+				"title": "Delete comment"
+			},
+			{
+				"command": "danmacom.deleteThread",
+				"category": "Danmacom",
+				"title": "Delete thread"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "danmacom.deleteComment",
+					"when": "false"
+				},
+				{
+					"command": "danmacom.deleteThread",
+					"when": "false"
+				}
+			],
+			"comments/comment/title": [
+				{
+					"command": "danmacom.deleteComment",
+					"group": "inline",
+					"when": "commentController == danmacom"
+				}
+			],
+			"comments/commentThread/title": [
+				{
+					"command": "danmacom.deleteThread",
+					"group": "inline",
+					"when": "commentController == danmacom"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "tslint -p ./",
+		"watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+		"@types/node": "^10.14.17",
+		"@types/vscode": "^1.34.0",
+		"typescript": "^3.5.1"
+	}
+}
