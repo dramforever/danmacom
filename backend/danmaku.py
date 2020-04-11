@@ -90,7 +90,7 @@ async def heartbeat(ws):
     hb = make_heartbeat()
     while True:
         await ws.send(hb)
-        await asyncio.sleep(30)
+        await asyncio.sleep(10)
 
 async def subscribe(live_id, handler):
     async with aiohttp.ClientSession() as session:
