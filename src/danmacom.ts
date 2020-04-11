@@ -107,11 +107,15 @@ export class Danmacom implements vscode.CodeLensProvider {
         token: vscode.CancellationToken
     ): vscode.CodeLens[] {
         return this.commentManager.listThreads(document.uri)
-            .map(thread => new vscode.CodeLens(thread.range, {
-                title: `${thread.comments.length} comment(s)`,
-                command: 'danmacom.showThread',
-                arguments: [thread],
-            }))
+            .map(thread => {
+                const pre = thread.line === null ? 'File: ' : '';
+
+                return new vscode.CodeLens(thread.range, {
+                    title: `${pre}/${thread.refId}: ${thread.comments.length} comment(s)`,
+                    command: 'danmacom.showThread',
+                    arguments: [thread],
+                });
+            })
     }
 
     resolveCodeLens(

@@ -34,6 +34,7 @@ export class DComment implements vscode.Comment {
 
 export interface DThread extends vscode.CommentThread {
     refId: number;
+    line: number | null;
     manager: CommentManager;
 }
 
@@ -111,10 +112,14 @@ export class CommentManager
                 this.controller.createCommentThread(
                     uri, new vscode.Range(line ?? 0, 0, line ?? 0, 0), []);
 
-            thread.label = `Thread ${refId} (Reply using '/${refId} comment')`;
+            const thType = line === null ? 'File thread' : 'Thread';
+
+            thread.label = `${thType} ${refId} (Reply using '/${refId} comment')`;
 
             (thread as any).refId = refId;
+            (thread as any).line = line;
             (thread as any).manager = this;
+
             this.threadMap.set(refId, thread as DThread);
             this.locMap.get(uriString)!.set(line, refId);
         }
