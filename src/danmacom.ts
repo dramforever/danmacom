@@ -153,11 +153,11 @@ export class Danmacom implements vscode.CodeLensProvider {
                 this.error(`  -> Error: ${JSON.stringify(danmaku.file)} not found`)
             } else if (uriResult.type === 'multiple_found') {
                 this.error(`  -> Error: ${JSON.stringify(danmaku.file)} is ambiguous: ${uriResult.paths.join(', ')}`)
+            } else if (danmaku.line
+                && (danmaku.line < 0
+                    || danmaku.line >= uriResult.result.lineCount)) {
+                this.error(`  -> Error: Line number ${danmaku.line + 1} out of range`);
             } else {
-                if (danmaku.line && danmaku.line >= uriResult.result.lineCount) {
-                    this.error(`  -> Error: Line number ${danmaku.line} out of range`);
-                }
-
                 const thread =
                     this.commentManager.getThread(
                         uriResult.result.uri, danmaku.line ?? null);
