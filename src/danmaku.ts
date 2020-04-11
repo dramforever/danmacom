@@ -26,7 +26,7 @@ export type Danmaku =
     & (ThreadDanmaku | FileDanmaku | NormalDanmaku);
 
 const threadRegex = /^\/(\d+)\s+/;
-const fileRegex = /^\/([^\s:]+)(?::(\d+))?\s+/
+const fileRegex = /^\/([^\s:]+)(?::(\d+)?)?\s+/
 
 export function parseDanmaku(line: string): Danmaku | null {
     try {
