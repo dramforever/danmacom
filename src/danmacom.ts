@@ -69,7 +69,7 @@ export class Danmacom implements vscode.CodeLensProvider {
             }),
 
             this.process.onStderr(data => {
-                this.printRGB(data.replace('\n', '\r\n'), [128, 128, 128])
+                this.printRGB(data.replace(/\n/g, '\r\n'), [128, 128, 128])
             }),
 
             this.process.onLine(this.handleLine.bind(this)),
