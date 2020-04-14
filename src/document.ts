@@ -34,12 +34,11 @@ export class DocumentFinder {
         }
     }
 
-    findDocument(str: string): FindDocumentResult {
-        const strLower = str.toLowerCase();
+    findDocument(pred: (s: string) => boolean): FindDocumentResult {
         const res: [vscode.TextDocument, string][] = [];
 
         for (const [doc, path] of this.documents) {
-            if (path.toLowerCase().indexOf(strLower) !== -1) {
+            if (pred(path)) {
                 res.push([doc, path]);
             }
         }

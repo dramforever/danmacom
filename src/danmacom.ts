@@ -163,7 +163,15 @@ export class Danmacom implements vscode.CodeLensProvider {
                 );
             }
         } else if (danmaku.type === 'file') {
-            const uriResult = this.documentFinder.findDocument(danmaku.file);
+            const danmaku_lower = danmaku.file.toLowerCase();
+            const pred: { [k: string]: (s: string) => boolean } = {
+                '/': (s) => s.toLowerCase().indexOf(danmaku_lower) !== -1,
+                '^': (s) => s.toLowerCase().startsWith(danmaku_lower),
+                '$': (s) => s.toLowerCase().endsWith(danmaku_lower),
+                '=': (s) => s === danmaku.file
+            };
+            const uriResult =
+                this.documentFinder.findDocument(pred[danmaku.leader]);
 
             if (uriResult.type === 'not_found') {
                 this.error(`  -> Error: ${JSON.stringify(danmaku.file)} not found`)

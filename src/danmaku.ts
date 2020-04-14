@@ -12,6 +12,7 @@ export interface ThreadDanmaku {
 
 export interface FileDanmaku {
     type: 'file';
+    leader: string;
     file: string;
     line?: number;
     text: string;
@@ -26,7 +27,7 @@ export type Danmaku =
     & (ThreadDanmaku | FileDanmaku | NormalDanmaku);
 
 const threadRegex = /^\/(\d+)\s+/;
-const fileRegex = /^\/([^\s:]+)(?::(\d+)?)?\s+/
+const fileRegex = /^([=\/\^\$])([^\s:]+)(?::(\d+)?)?\s+/
 
 export function parseDanmaku(line: string): Danmaku | null {
     try {
@@ -43,12 +44,13 @@ export function parseDanmaku(line: string): Danmaku | null {
 
         const fileMatch = json.content.match(fileRegex);
         if (fileMatch) {
-            const line = fileMatch[2] ? (+ fileMatch[2] - 1) : undefined;
+            const line = fileMatch[3] ? (+ fileMatch[3] - 1) : undefined;
 
             return {
                 ...json,
+                leader: fileMatch[1],
                 type: 'file',
-                file: fileMatch[1],
+                file: fileMatch[2],
                 line,
                 text: json.content.slice(fileMatch[0].length)
             };
