@@ -4,6 +4,7 @@ import { CommentManager, DComment, DThread } from './comment';
 import { DocumentFinder } from './document';
 import { parseDanmaku } from './danmaku';
 import { OutputTerminal } from './terminal';
+import { formatHMS } from './utils';
 
 export class Danmacom implements vscode.CodeLensProvider {
     process: ProcessManager;
@@ -108,11 +109,12 @@ export class Danmacom implements vscode.CodeLensProvider {
             ('refId' in reply.thread)
             ? (reply.thread as DThread)
             : this.commentManager.addThread(reply.thread);
-        new DComment(
+
+        const comment = new DComment(
             'Host', null, text, thread, this.commentManager
         );
 
-        this.trace(`[Host]: /${thread.refId} ${text}`);
+        this.trace(`[${formatHMS(comment.date)}] [Host]: /${thread.refId} ${text}`);
         this.codeLensesEmitter.fire();
     }
 
@@ -146,7 +148,7 @@ export class Danmacom implements vscode.CodeLensProvider {
             return;
         }
 
-        this.trace(`${danmaku.author}: ${danmaku.content}`);
+        this.trace(`[${formatHMS(new Date())}] ${danmaku.author}: ${danmaku.content}`);
 
         if (danmaku.type === 'thread') {
             const threadResult =

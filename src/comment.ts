@@ -1,8 +1,11 @@
 import * as vscode from 'vscode';
+import { formatHMS } from './utils';
 
 export class DComment implements vscode.Comment {
     mode: vscode.CommentMode;
     author: vscode.CommentAuthorInformation;
+    date: Date;
+    label: string;
 
     constructor(
         author: string,
@@ -11,6 +14,9 @@ export class DComment implements vscode.Comment {
         public thread: DThread,
         public manager: CommentManager
     ) {
+        this.date = new Date();
+        this.label = `(${formatHMS(this.date)})`;
+
         this.author = {
             name: author,
             iconPath: face
