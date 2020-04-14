@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { ProcessManager } from "./process";
-import { CommentManager, DComment } from './comment';
+import { CommentManager, DComment, DThread } from './comment';
 import { DocumentFinder } from './document';
 import { parseDanmaku } from './danmaku';
 import { OutputTerminal } from './terminal';
@@ -100,6 +100,17 @@ export class Danmacom implements vscode.CodeLensProvider {
         this.status.text = '$(comment-discussion)$(arrow-right)$(file-code)';
         if (this.unread > 0)
             this.status.text += ` ($(bell)${this.unread})`;
+    }
+
+    handleReply(reply: vscode.CommentReply) {
+        const thread =
+            ('refId' in reply.thread)
+            ? (reply.thread as DThread)
+            : this.commentManager.addThread(reply.thread);
+        new DComment(
+            'Host', null, reply.text, thread, this.commentManager
+        );
+        this.codeLensesEmitter.fire();
     }
 
     provideCodeLenses(

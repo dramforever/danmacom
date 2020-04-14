@@ -101,6 +101,21 @@ export class CommentManager
             return [];
     }
 
+    addThread(thread: vscode.CommentThread): DThread {
+        this.threadCounter ++;
+        const refId = this.threadCounter;
+        (thread as any).refId = refId;
+        const line = thread.range.start.line;
+        thread.range = new vscode.Range(line, 0, line, 0);
+        (thread as any).line = thread.range.start.line;
+        (thread as any).manager = this;
+        if (! this.locMap.has(thread.uri.toString()))
+            this.locMap.set(thread.uri.toString(), new Map());
+        this.locMap.get(thread.uri.toString())!.set(line, refId);
+        this.threadMap.set(refId, thread as DThread);
+        return thread as DThread;
+    }
+
     getThread(uri: vscode.Uri, line: number | null): DThread {
         const uriString = uri.toString();
         if (! this.locMap.has(uriString))
@@ -128,9 +143,9 @@ export class CommentManager
     }
 
     provideCommentingRanges
-        (_document: vscode.TextDocument, _token: vscode.CancellationToken)
+        (document: vscode.TextDocument, _token: vscode.CancellationToken)
         : vscode.ProviderResult<vscode.Range[]> {
-        return [];
+        return [new vscode.Range(0, 0, document.lineCount - 1, 0)];
     }
 
     dispose() {

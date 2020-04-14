@@ -52,6 +52,16 @@
 				"command": "danmacom.deleteThread",
 				"category": "Danmacom",
 				"title": "Delete thread"
+			},
+			{
+				"command": "danmacom.createThread",
+				"category": "Danmacom",
+				"title": "Create thread"
+			},
+			{
+				"command": "danmacom.reply",
+				"category": "Danmacom",
+				"title": "Reply"
 			}
 		],
 		"menus": {
@@ -62,6 +72,14 @@
 				},
 				{
 					"command": "danmacom.deleteThread",
+					"when": "false"
+				},
+				{
+					"command": "danmacom.createThread",
+					"when": "false"
+				},
+				{
+					"command": "danmacom.reply",
 					"when": "false"
 				}
 			],
@@ -77,6 +95,18 @@
 					"command": "danmacom.deleteThread",
 					"group": "inline",
 					"when": "commentController == danmacom"
+				}
+			],
+			"comments/commentThread/context": [
+				{
+					"command": "danmacom.createThread",
+					"group": "inline",
+					"when": "commentController == danmacom && commentThreadIsEmpty"
+				},
+				{
+					"command": "danmacom.reply",
+					"group": "inline",
+					"when": "commentController == danmacom && !commentThreadIsEmpty"
 				}
 			]
 		}

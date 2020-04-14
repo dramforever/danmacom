@@ -73,6 +73,14 @@ export function activate(context: vscode.ExtensionContext) {
 			() => current?.clickStatusBar()
 		),
 		vscode.commands.registerCommand(
+			'danmacom.createThread',
+			(reply) => current?.handleReply(reply)
+		),
+		vscode.commands.registerCommand(
+			'danmacom.reply',
+			(reply) => current?.handleReply(reply)
+		),
+		vscode.commands.registerCommand(
 			'danmacom.deleteComment',
 			(comment: DComment) => comment.dispose()
 		),
