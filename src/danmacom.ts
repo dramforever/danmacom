@@ -103,13 +103,16 @@ export class Danmacom implements vscode.CodeLensProvider {
     }
 
     handleReply(reply: vscode.CommentReply) {
+        const text = reply.text.trim();
         const thread =
             ('refId' in reply.thread)
             ? (reply.thread as DThread)
             : this.commentManager.addThread(reply.thread);
         new DComment(
-            'Host', null, reply.text, thread, this.commentManager
+            'Host', null, text, thread, this.commentManager
         );
+
+        this.trace(`[Host]: /${thread.refId} ${text}`);
         this.codeLensesEmitter.fire();
     }
 
