@@ -125,7 +125,13 @@ async def handle(event, session):
         print(json.dumps({'author': author, 'face': face, 'content': content}))
 
 async def main():
-    await subscribe(int(sys.argv[1]), handle)
+    while True:
+        try:
+            await subscribe(int(sys.argv[1]), handle)
+        except websockets.ConnectionClosed as err:
+            print(err, file=sys.stderr)
+            print('Retrying after 3s', file=sys.stderr)
+            await asyncio.sleep(3)
 
 if __name__ == '__main__':
     asyncio.run(main())
