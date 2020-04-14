@@ -29,7 +29,7 @@ export class DocumentFinder {
             this.documents.delete(doc);
         } else {
             if (uri.scheme !== 'file') return;
-            const path = vscode.workspace.asRelativePath(uri, true);
+            const path = vscode.workspace.asRelativePath(uri);
             this.documents.set(doc, path);
         }
     }
