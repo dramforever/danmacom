@@ -3,7 +3,7 @@
 	"publisher": "dramforever",
 	"displayName": "Danmacom",
 	"description": "Turn danmaku into comments",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"license": "ISC",
 	"repository": {
 		"type": "git",
