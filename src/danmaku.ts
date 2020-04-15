@@ -29,9 +29,8 @@ export type Danmaku =
 const threadRegex = /^\/(\d+)\s+/;
 const fileRegex = /^([=\/\^\$])([^\s:]+)(?::(\d+)?)?\s+/
 
-export function parseDanmaku(line: string): Danmaku | null {
+export function parseDanmaku(json: TextDanmaku): Danmaku | null {
     try {
-        const json = JSON.parse(line) as TextDanmaku;
         const threadMatch = json.content.match(threadRegex);
         if (threadMatch) {
             return {

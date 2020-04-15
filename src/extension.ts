@@ -2,20 +2,13 @@ import * as vscode from 'vscode';
 import { Danmacom } from './danmacom';
 import { OutputTerminal } from './terminal';
 import { DComment, DThread, showThread } from './comment';
+import { BackendMaker, BackendConfigError, Backend } from './backend';
+import { BilibiliBackend } from './backend/bilibili';
+import { ProcessManager } from './backend/process';
 
-function promptConfigureBackend() {
-	vscode.window.showInformationMessage(
-		'Please configure danmaku backend',
-		'Open Settings'
-	).then(item => {
-		if (item === 'Open Settings')
-			vscode.commands.executeCommand(
-				'workbench.action.openSettings',
-				`danmacom.program`
-			);
-	}, err => {
-		console.error(err)
-	});
+const backends: { [k: string]: BackendMaker } = {
+	'bilibili': BilibiliBackend,
+	'external': ProcessManager
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -36,15 +29,56 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	function startDanmacom() {
-		const cmd =
-			vscode.workspace
-			.getConfiguration('danmacom')
-			.get('program') as string;
-
-		if (cmd === '') {
-			promptConfigureBackend();
+		const config = vscode.workspace.getConfiguration('danmacom');
+		if (! (config.backend in backends)) {
+			const msg =
+				config.backend === ''
+				? 'Backend not configured'
+				: `No such backend: ${config.backend}`;
+			vscode.window.showErrorMessage(msg, 'Settings')
+				.then(
+					(item) => {
+						if (item === 'Settings') {
+							vscode.commands.executeCommand(
+								'workbench.action.openSettings',
+								`danmacom`
+							);
+						}
+					},
+					(err) => console.error(err)
+				)
 			return;
 		}
+
+		const backend: Backend | null = (() => {
+			try {
+				return new backends[config.backend](config.backendConfig)
+			} catch(err) {
+				if (err instanceof BackendConfigError) {
+					vscode.window.showErrorMessage(
+						`Backend config error: ${err}`,
+						'Settings'
+					).then(
+						(item) => {
+							if (item === 'Settings') {
+								vscode.commands.executeCommand(
+									'workbench.action.openSettings',
+									`danmacom`
+								);
+							}
+						},
+						(err) => console.error(err)
+					)
+				} else {
+					vscode.window.showErrorMessage(
+						`Error: ${err}`
+					);
+				}
+				return null;
+			}
+		})();
+
+		if (backend === null) return;
 
 		if (current?.running) {
 			vscode.window.showInformationMessage(
@@ -61,7 +95,7 @@ export function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
-		current = new Danmacom(cmd, outputTerminal, terminal);
+		current = new Danmacom(outputTerminal, terminal, backend!);
 	}
 
 	context.subscriptions.push(

@@ -1,13 +1,12 @@
 import * as vscode from 'vscode';
-import { ProcessManager } from "./process";
 import { CommentManager, DComment, DThread } from './comment';
 import { DocumentFinder } from './document';
-import { parseDanmaku } from './danmaku';
+import { parseDanmaku, TextDanmaku } from './danmaku';
 import { OutputTerminal } from './terminal';
 import { formatHMS } from './utils';
+import { Backend } from './backend';
 
 export class Danmacom implements vscode.CodeLensProvider {
-    process: ProcessManager;
     commentController: vscode.CommentController;
     commentManager: CommentManager;
     documentFinder: DocumentFinder;
@@ -20,13 +19,12 @@ export class Danmacom implements vscode.CodeLensProvider {
     onDidChangeCodeLenses: vscode.Event<void>;
 
     constructor(
-        cmd: string,
         public outputTerminal: OutputTerminal,
-        public terminal: vscode.Terminal
+        public terminal: vscode.Terminal,
+        public backend: Backend
     ) {
         this.commentController =
             vscode.comments.createCommentController('danmacom', 'Danmacom');
-        this.process = new ProcessManager(cmd);
         this.commentManager = new CommentManager(this.commentController);
         this.documentFinder = new DocumentFinder;
         this.running = true;
@@ -47,7 +45,7 @@ export class Danmacom implements vscode.CodeLensProvider {
 
         this.disposables = [
             this.commentController,
-            this.process,
+            this.backend,
             this.commentManager,
             this.documentFinder,
             this.status,
@@ -69,12 +67,14 @@ export class Danmacom implements vscode.CodeLensProvider {
                 this.codeLensesEmitter.fire();
             }),
 
-            this.process.onStderr(data => {
+            this.backend.onLogMessage(data => {
+                if (! data.endsWith('\n')) data += '\n';
                 this.printRGB(data.replace(/\n/g, '\r\n'), [128, 128, 128])
             }),
 
-            this.process.onLine(this.handleLine.bind(this)),
-            this.process.onStop(this.dispose.bind(this)),
+            this.backend.onDanmaku(this.handleLine.bind(this)),
+            this.backend.onClose(this.dispose.bind(this)),
+
             this.outputTerminal.onClose(this.dispose.bind(this)),
             this.outputTerminal.onInput((data) => {
                 if (data === '\x03') {
@@ -87,7 +87,7 @@ export class Danmacom implements vscode.CodeLensProvider {
             })
         ];
 
-        this.trace(`[Starting ${cmd}]`);
+        this.trace(`[Starting: ${backend}]`);
         terminal.show();
     }
 
@@ -141,10 +141,10 @@ export class Danmacom implements vscode.CodeLensProvider {
         return codeLens;
     }
 
-    handleLine(line: string) {
-        const danmaku = parseDanmaku(line);
+    handleLine(json: TextDanmaku) {
+        const danmaku = parseDanmaku(json);
         if (danmaku === null) {
-            this.error(`  -> Error: Cannot parse json: ${line}`);
+            this.error(`  -> Error: Cannot parse json: ${json}`);
             return;
         }
 

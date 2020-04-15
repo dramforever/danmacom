@@ -14,9 +14,9 @@ press space or enter in terminal to clear the count.
 
 ## Backend
 
-Danmacom requires a backend. Currently the only backend is for Bilibili, which
-is available in `backend/danmaku.py`. The protocol is considered internal, but
-it is currently as follows:
+Danmacom has a built-in backend for Bilibili, and can also use an external
+program to receive messages. The protocol is considered internal, but it is
+currently as follows:
 
 - `stderr` is logged but otherwise ignored
 - Each line in `stdout` is parsed as JSON and should contain
@@ -24,8 +24,25 @@ it is currently as follows:
     - `face`: URL to avatar icon
     - `content`: Text of message
 
-To use this backend, set `danmacom.program` to `python3 -u /path/to/danmaku.py
-<live_id>`. `-u` is important to avoid buffering.
+To use the built-in Bilibili backend, use these settings, and use your room id
+for `liveId`:
+
+```json
+"danmacom.backend": "bilibili",
+"danmacom.backendConfig": {
+    "liveId": 123456,
+}
+```
+
+To use the example external backend, use these settings, and use your room id
+for the argument. `-u` is important to avoid buffering.
+
+```json
+"danmacom.backend": "external",
+"danmacom.backendConfig": {
+    "cmd": "python3 -u /path/to/danmaku.py 123456"
+}
+```
 
 ## Chatroom usage
 

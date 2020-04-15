@@ -24,11 +24,27 @@
 			"type": "object",
 			"title": "Danmacom configuration",
 			"properties": {
-				"danmacom.program": {
-					"type": "string",
+				"danmacom.backend": {
+					"type": [
+						"string"
+					],
+					"enum": [
+						"bilibili",
+						"external",
+						""
+					],
+					"enumDescriptions": [
+						"Built-in Bilibili backend",
+						"External program",
+						"Unset default value"
+					],
 					"default": "",
-					"scope": "application",
-					"markdownDescription": "Command for program to use as backend"
+					"markdownDescription": "The backend to use"
+				},
+				"danmacom.backendConfig": {
+					"type": "object",
+					"default": {},
+					"markdownDescription": "Backend configuration options"
 				}
 			}
 		},
@@ -122,5 +138,11 @@
 		"@types/vscode": "^1.34.0",
 		"typescript": "^3.5.1",
 		"vsce": "^1.75.0"
+	},
+	"dependencies": {
+		"@types/node-fetch": "^2.5.6",
+		"@types/ws": "^7.2.4",
+		"node-fetch": "^2.6.0",
+		"ws": "^7.2.3"
 	}
 }
