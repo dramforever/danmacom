@@ -34,7 +34,7 @@ jobs:
     - name: Get package name
       id: get_package_name
       run: |
-        echo "::set-output name=name::$(echo vscode-ghc-simple-*.vsix)"
+        echo "::set-output name=name::$(echo *.vsix)"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
