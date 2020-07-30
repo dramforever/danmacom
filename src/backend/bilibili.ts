@@ -80,7 +80,7 @@ function parsePacket(packet: Buffer) {
         }
     } else if (op === 5) {
         if (ver === 2) {
-            packet = zlib.deflateSync(packet);
+            packet = zlib.inflateSync(packet);
             const next_head_len = packet.readUInt16BE(4);
             packet = packet.slice(next_head_len);
         }
